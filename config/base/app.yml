@@ -29,6 +29,8 @@ spec:
           value: "$DB_TABLE"
         - name: DB_USERNAME
           value: "$DB_USERNAME"
+        - name: SSL_MODE
+          value: "$SSL_MODE"
         ports:
         - name: app
           containerPort: 8080
