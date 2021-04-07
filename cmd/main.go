@@ -1,10 +1,16 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"net/http"
+
+	transportHTTP "github.com/jonleopard/comments-api/internal/transport/http"
+)
 
 // App - the struct which contains things link pointers
 // to database connections
-type App struct{}
+type App struct {
+}
 
 func main() {
 	fmt.Println("Go REST API Course")
@@ -18,5 +24,12 @@ func main() {
 // Run - sets up our application
 func (app *App) Run() error {
 	fmt.Println("Setting up our APP")
+	handler := transportHTTP.NewHandler()
+	handler.SetupRoutes()
+	if err := http.ListenAndServe(":8080", handler.Router); err != nil {
+		fmt.Println("Failed to setup server")
+		return err
+	}
+
 	return nil
 }
