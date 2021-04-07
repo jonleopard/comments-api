@@ -8,9 +8,13 @@ import (
 	"gorm.io/gorm"
 )
 
-// NewDatabse - returns a pointer to a database object
 func NewDatabase() (*gorm.DB, error) {
 	fmt.Println("Setting up new database connection")
+	os.Setenv("DB_USERNAME", "postgres")
+	os.Setenv("DB_PASSWORD", "postgres")
+	os.Setenv("DB_HOST", "localhost")
+	os.Setenv("DB_TABLE", "postgres")
+	os.Setenv("DB_PORT", "5432")
 	dbUsername := os.Getenv("DB_USERNAME")
 	dbPassword := os.Getenv("DB_PASSWORD")
 	dbHost := os.Getenv("DB_HOST")
