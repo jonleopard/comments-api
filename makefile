@@ -11,6 +11,20 @@ api:
 		--build-arg BUILD_DATE=`date -u +”%Y-%m-%dT%H:%M:%SZ”` \
 		.
 
+# ==============================================================================
+# Running from within docker compose
+
+run: up seed
+
+up:
+	docker-compose -f docker-compose.yml up --detach --remove-orphans
+
+down:
+	docker-compose -f docker-compose.yml down --remove-orphans
+
+logs:
+	docker-compose -f docker-compose.yml logs -f
+
 
 
 # ==============================================================================
