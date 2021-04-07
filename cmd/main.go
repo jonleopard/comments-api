@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/jonleopard/comments-api/internal/comment"
 	"github.com/jonleopard/comments-api/internal/database"
 	transportHTTP "github.com/jonleopard/comments-api/internal/transport/http"
 )
@@ -27,13 +28,21 @@ func (app *App) Run() error {
 	fmt.Println("Setting up our APP")
 
 	var err error
-	_, err = database.NewDatabase()
+	db, err := database.NewDatabase()
 	if err != nil {
 		return err
 	}
 
-	handler := transportHTTP.NewHandler()
+	database.MigrateDB(db)
+	if err != nil {
+		return err
+	}
+
+	commentService := comment.NewService(db)
+
+	handler := transportHTTP.NewHandler(commentService)
 	handler.SetupRoutes()
+
 	if err := http.ListenAndServe(":8080", handler.Router); err != nil {
 		fmt.Println("Failed to setup server")
 		return err
