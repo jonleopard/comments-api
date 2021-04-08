@@ -62,7 +62,7 @@ func BasicAuth(original func(w http.ResponseWriter, r *http.Request)) func(w htt
 }
 
 func validateToken(accessToken string) bool {
-	var mySigningKey = []byte("misssionimpossible")
+	var mySigningKey = []byte("missionimpossible")
 	token, err := jwt.Parse(accessToken, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("there has been an error")
