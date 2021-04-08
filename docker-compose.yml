@@ -16,10 +16,9 @@ services:
       - database_postgres:/var/lib/postgresql/data
 
   api:
-    build: .
-    container_name: "rest-api"
+    image: comments-api-amd64:1.0
+    container_name: "comments-api"
     environment:
-      TEST: "test"
       DB_USERNAME: "postgres"
       DB_PASSWORD: "postgres"
       DB_DB: "postgres"
