@@ -3,8 +3,11 @@ package http
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
+	"strings"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/jonleopard/comments-api/internal/comment"
@@ -58,6 +61,46 @@ func BasicAuth(original func(w http.ResponseWriter, r *http.Request)) func(w htt
 	}
 }
 
+func validateToken(accessToken string) bool {
+	var mySigningKey = []byte("misssionimpossible")
+	token, err := jwt.Parse(accessToken, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("there has been an error")
+		}
+		return mySigningKey, nil
+	})
+	if err != nil {
+		return false
+	}
+
+	return token.Valid
+}
+
+// JWTAuth - a decorator function for jwt validation for endpoints
+func JWTAuth(original func(w http.ResponseWriter, r *http.Request)) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		log.Info("jwt authentication hit")
+		authHeader := r.Header["Authorization"]
+		if authHeader == nil {
+			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+			sendErrorResponse(w, "not authorized", errors.New("not authorized"))
+		}
+		// Bearer jwt-token
+		authHeaderParts := strings.Split(authHeader[0], " ")
+		if len(authHeaderParts) != 2 || strings.ToLower(authHeaderParts[0]) != "bearer" {
+			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+			sendErrorResponse(w, "not authorized", errors.New("not authorized"))
+		}
+
+		if validateToken(authHeaderParts[1]) {
+			original(w, r)
+		} else {
+			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+			sendErrorResponse(w, "not authorized", errors.New("not authorized"))
+		}
+	}
+}
+
 // SetupRoutes - sets up all the routes for our application
 func (h *Handler) SetupRoutes() {
 	log.Info("Setting up routes")
@@ -68,10 +111,10 @@ func (h *Handler) SetupRoutes() {
 	h.Router.Use(render.SetContentType(render.ContentTypeJSON))
 
 	h.Router.MethodFunc("GET", "/api/comment", h.GetAllComments)
-	h.Router.MethodFunc("POST", "/api/comment", BasicAuth(h.PostComment))
+	h.Router.MethodFunc("POST", "/api/comment", JWTAuth(h.PostComment))
 	h.Router.MethodFunc("GET", "/api/comment/{id}", h.GetComment)
-	h.Router.MethodFunc("PUT", "/api/comment/{id}", BasicAuth(h.UpdateComment))
-	h.Router.MethodFunc("DELETE", "/api/comment/{id}", BasicAuth(h.DeleteComment))
+	h.Router.MethodFunc("PUT", "/api/comment/{id}", JWTAuth(h.UpdateComment))
+	h.Router.MethodFunc("DELETE", "/api/comment/{id}", JWTAuth(h.DeleteComment))
 
 	h.Router.HandleFunc("/api/healthz", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
