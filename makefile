@@ -4,7 +4,7 @@
 all: api
 
 api:
-	docker build \
+	docker build --no-cache \
 		-f ./Dockerfile \
 		-t comments-api-amd64:1.0 \
 		--build-arg VCS_REF=`git rev-parse HEAD` \
