@@ -13,7 +13,7 @@ func NewDatabase() (*gorm.DB, error) {
 	log.Info("Setting up new database connection")
 	os.Setenv("DB_USERNAME", "postgres")
 	os.Setenv("DB_PASSWORD", "postgres")
-	os.Setenv("DB_HOST", "localhost")
+	os.Setenv("DB_HOST", "db")
 	os.Setenv("DB_TABLE", "postgres")
 	os.Setenv("DB_PORT", "5432")
 	os.Setenv("SSL_MODE", "disable")
