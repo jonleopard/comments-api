@@ -14,7 +14,7 @@ api:
 # ==============================================================================
 # Running from within docker compose
 
-run: up seed
+run: up
 
 up:
 	docker-compose -f docker-compose.yml up --detach --remove-orphans

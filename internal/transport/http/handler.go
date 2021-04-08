@@ -42,6 +42,15 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+// BasicAuth - a handy middleware function that will provide basic auth around
+// specific endpoints
+func BasicAuth(original func(w http.ResponseWriter, r *http.Request)) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		log.Info("basic auth endpoint hit")
+		original(w, r)
+	}
+}
+
 // SetupRoutes - sets up all the routes for our application
 func (h *Handler) SetupRoutes() {
 	log.Info("Setting up routes")
@@ -52,10 +61,10 @@ func (h *Handler) SetupRoutes() {
 	h.Router.Use(render.SetContentType(render.ContentTypeJSON))
 
 	h.Router.MethodFunc("GET", "/api/comment", h.GetAllComments)
-	h.Router.MethodFunc("POST", "/api/comment", h.PostComment)
+	h.Router.MethodFunc("POST", "/api/comment", BasicAuth(h.PostComment))
 	h.Router.MethodFunc("GET", "/api/comment/{id}", h.GetComment)
-	h.Router.MethodFunc("PUT", "/api/comment/{id}", h.UpdateComment)
-	h.Router.MethodFunc("DELETE", "/api/comment/{id}", h.DeleteComment)
+	h.Router.MethodFunc("PUT", "/api/comment/{id}", BasicAuth(h.UpdateComment))
+	h.Router.MethodFunc("DELETE", "/api/comment/{id}", BasicAuth(h.DeleteComment))
 
 	h.Router.HandleFunc("/api/healthz", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
