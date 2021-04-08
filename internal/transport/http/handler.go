@@ -38,7 +38,7 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 			log.Fields{
 				"Method": r.Method,
 				"Path":   r.URL.Path,
-			}).Info("handdled request")
+			}).Info("handled request")
 		next.ServeHTTP(w, r)
 	})
 }
