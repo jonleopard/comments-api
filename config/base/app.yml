@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   name: comments-api
 spec:
-  replicas: 3
+  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -53,10 +53,12 @@ kind: Service
 metadata:
   name: comments-api
 spec:
+  type: NodePort
   selector:
     service: comments-api
   ports:
-  - name: app
+  - protocol: TCP
+    name: app
     port: 8080
     targetPort: app
   - name: postgres

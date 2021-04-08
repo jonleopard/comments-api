@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"os"
 
+	log "github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 func NewDatabase() (*gorm.DB, error) {
-	fmt.Println("Setting up new database connection")
+	log.Info("Setting up new database connection")
 	os.Setenv("DB_USERNAME", "postgres")
 	os.Setenv("DB_PASSWORD", "postgres")
 	os.Setenv("DB_HOST", "localhost")

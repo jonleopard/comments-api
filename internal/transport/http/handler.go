@@ -2,7 +2,6 @@ package http
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -10,6 +9,8 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/jonleopard/comments-api/internal/comment"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // Handler - stores pointer to our comments service
@@ -33,7 +34,7 @@ func NewHandler(service *comment.Service) *Handler {
 
 // SetupRoutes - sets up all the routes for our application
 func (h *Handler) SetupRoutes() {
-	fmt.Println("Setting up routes")
+	log.Info("Setting up routes")
 
 	h.Router = chi.NewRouter()
 	h.Router.Use(middleware.RequestID)
